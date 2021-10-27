@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
-import kotlinx.android.synthetic.main.activity_assignment_details.*
+import com.tinyappco.databasedemo.databinding.ActivityAssignmentDetailsBinding
 import java.util.*
 
 class AssignmentDetailsActivity : AppCompatActivity() {
@@ -15,9 +15,13 @@ class AssignmentDetailsActivity : AppCompatActivity() {
 
     private var existingAssignment : Assignment? = null
 
+    private lateinit var binding: ActivityAssignmentDetailsBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_assignment_details)
+        binding = ActivityAssignmentDetailsBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
         dataMgr = DataManager(this)
 
@@ -26,14 +30,14 @@ class AssignmentDetailsActivity : AppCompatActivity() {
         val assignment = intent.getSerializableExtra("assignment")
         if (assignment is Assignment){
             existingAssignment = assignment
-            etTitle.setText(assignment.title)
-            etWeight.setText(assignment.weight.toString())
+            binding.etTitle.setText(assignment.title)
+            binding.etWeight.setText(assignment.weight.toString())
 
             val cal = Calendar.getInstance()
             cal.time = assignment.deadline
-            datePicker.init(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), null)
+            binding.datePicker.init(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), null)
 
-            btnAdd.text = getString(R.string.update)
+            binding.btnAdd.text = getString(R.string.update)
             title = getString(R.string.edit_assignment)
         } else {
             title = getString(R.string.add_assignment)
@@ -47,18 +51,18 @@ class AssignmentDetailsActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        btnAdd.isEnabled = dataMgr.hasModules()
+        binding.btnAdd.isEnabled = dataMgr.hasModules()
     }
 
     private fun refreshSpinner(){
         modules = dataMgr.allModules()
         val adapter = ArrayAdapter<Module>(this,android.R.layout.simple_spinner_item, modules)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinner.adapter = adapter
+        binding.spinner.adapter = adapter
 
         val assignment = existingAssignment
         if (assignment != null){
-            spinner.setSelection(adapter.getPosition(assignment.module))
+            binding.spinner.setSelection(adapter.getPosition(assignment.module))
         }
     }
 
@@ -76,17 +80,17 @@ class AssignmentDetailsActivity : AppCompatActivity() {
     @Suppress("UNUSED_PARAMETER")
     fun addAssignment(v: View){
 
-        val title = etTitle.text.toString()
-        val weight = etWeight.text.toString().toInt()
-        val date = datePicker.date()
-        val selectedModule = modules[spinner.selectedItemPosition]
+        val title = binding.etTitle.text.toString()
+        val weight = binding.etWeight.text.toString().toInt()
+        val date = binding.datePicker.date()
+        val selectedModule = modules[binding.spinner.selectedItemPosition]
 
         val immutableExistingAssignment = existingAssignment
 
         if (immutableExistingAssignment != null) {
             immutableExistingAssignment.title = title
             immutableExistingAssignment.weight = weight
-            immutableExistingAssignment.deadline = datePicker.date()
+            immutableExistingAssignment.deadline = binding.datePicker.date()
             immutableExistingAssignment.module = selectedModule
 
             dataMgr.update(immutableExistingAssignment)

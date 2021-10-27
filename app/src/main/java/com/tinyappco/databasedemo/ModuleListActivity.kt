@@ -8,22 +8,27 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import kotlinx.android.synthetic.main.activity_module_list.*
+import com.tinyappco.databasedemo.databinding.ActivityModuleListBinding
+
 
 class ModuleListActivity : AppCompatActivity() {
 
     private lateinit var modules : List<Module>
     private lateinit var dataManager: DataManager
 
+    private lateinit var binding: ActivityModuleListBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_module_list)
+        binding = ActivityModuleListBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
         dataManager = DataManager(this)
 
         refreshList()
 
-        listView.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+        binding.listView.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
 
             val module = modules[position]
             val intent = Intent(this,ModuleDetailsActivity::class.java)
@@ -31,14 +36,14 @@ class ModuleListActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        registerForContextMenu(listView)
+        registerForContextMenu(binding.listView)
 
         title=getString(R.string.modules)
     }
 
     private fun refreshList(){
         modules = dataManager.allModules()
-        listView.adapter = ArrayAdapter<Module>(this,android.R.layout.simple_list_item_1,modules)
+        binding.listView.adapter = ArrayAdapter<Module>(this,android.R.layout.simple_list_item_1,modules)
     }
 
 

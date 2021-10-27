@@ -9,22 +9,26 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import kotlinx.android.synthetic.main.activity_main.*
+import com.tinyappco.databasedemo.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var dataManager: DataManager
     private lateinit var dataSet : List<Assignment>
 
+    private lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
         dataManager = DataManager(this)
 
         refreshDeadlines()
 
-        registerForContextMenu(listView)
+        registerForContextMenu(binding.listView)
 
         title = getString(R.string.deadlines)
     }
@@ -78,7 +82,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun refreshDeadlines(){
         dataSet = dataManager.assignments()
-        listView.adapter = ArrayAdapter<Assignment>(this,android.R.layout.simple_list_item_1,dataSet)
+        binding.listView.adapter = ArrayAdapter<Assignment>(this,android.R.layout.simple_list_item_1,dataSet)
     }
 
     override fun onResume() {
