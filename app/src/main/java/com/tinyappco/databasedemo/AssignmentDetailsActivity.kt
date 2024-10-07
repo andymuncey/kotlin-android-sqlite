@@ -45,6 +45,8 @@ class AssignmentDetailsActivity : AppCompatActivity() {
 
         refreshSpinner()
 
+        binding.btnAdd.setOnClickListener { addAssignment() }
+
     }
 
 
@@ -78,7 +80,7 @@ class AssignmentDetailsActivity : AppCompatActivity() {
     }
 
     @Suppress("UNUSED_PARAMETER")
-    fun addAssignment(v: View){
+    fun addAssignment(){
 
         val title = binding.etTitle.text.toString()
         val weight = binding.etWeight.text.toString().toInt()
