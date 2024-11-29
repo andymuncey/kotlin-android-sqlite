@@ -11,8 +11,13 @@ class ModuleDetailActivity : AppCompatActivity() {
 
     lateinit var binding : ActivityModuleDetailBinding
 
+    private lateinit var dataManager : DataManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        dataManager = DataManager(this)
+
         enableEdgeToEdge()
 
         binding = ActivityModuleDetailBinding.inflate(layoutInflater)
@@ -29,6 +34,23 @@ class ModuleDetailActivity : AppCompatActivity() {
     }
 
     private fun addModule(){
+        val code = binding.etCode.text.toString()
+        if (validateModuleCode(code)) {
+            val module = Module(binding.etCode.text.toString(), binding.etTitle.text.toString())
+            if (dataManager.add(module)) {
+                finish()
+            } else {
+                binding.tvError.text =
+                    getString(R.string.unable_to_add_module_does_the_module_already_exist)
+            }
+        }else {
+            binding.tvError.text =
+                getString(R.string.module_code_should_be_two_upper_case_letters_followed_by_four_numbers)
+        }
+    }
 
+    private fun validateModuleCode(code: String) : Boolean{
+        val regEx = "([A-Z]{2})([4-7])([0-9]{3})"
+        return code.matches(Regex(regEx))
     }
 }

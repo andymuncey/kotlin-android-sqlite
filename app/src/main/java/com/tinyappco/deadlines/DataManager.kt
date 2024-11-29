@@ -14,9 +14,14 @@ init{
     db.execSQL(assignmentsCreateQuery)
 }
 
-    fun add(module: Module){
-        val query = "INSERT INTO Modules (code, name) VALUES ('${module.code}', '${module.name}')"
-        db.execSQL(query)
+    fun add(module: Module) : Boolean{
+        if (module(module.code) == null) {
+            val query =
+                "INSERT INTO Modules (code, name) VALUES ('${module.code}', '${module.name}')"
+            db.execSQL(query)
+            return true
+        }
+        return false
     }
 
     fun allModules() : List<Module>{
@@ -34,6 +39,19 @@ init{
         }
         cursor.close()
         return modules.sorted()
+    }
+
+    private fun module(code: String) : Module? {
+        val query = "SELECT * FROM Modules WHERE Code='$code'"
+        val cursor = db.rawQuery(query,null)
+        return if (cursor.moveToFirst()) {
+            val name = cursor.getString(cursor.getColumnIndexOrThrow("Code"))
+            cursor.close()
+            Module(code,name)
+        } else {
+            cursor.close()
+            null
+        }
     }
 
 }
