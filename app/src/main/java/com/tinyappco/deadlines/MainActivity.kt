@@ -52,6 +52,19 @@ class MainActivity : AppCompatActivity() {
             refreshDeadlines()
             return true
         }
+
+        if (item.itemId == R.id.menu_edit){
+            val info = item.menuInfo as AdapterView.AdapterContextMenuInfo
+            val componentToEdit = dataSet[info.position]
+
+            val intent = Intent(this,AssignmentDetailsActivity::class.java)
+            intent.putExtra("assignment",componentToEdit)
+            startActivity(intent)
+
+            return true
+        }
+
+
         return super.onContextItemSelected(item)
     }
 

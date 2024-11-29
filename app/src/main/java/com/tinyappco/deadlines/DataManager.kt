@@ -16,15 +16,29 @@ init{
     db.execSQL(assignmentsCreateQuery)
 }
 
+
+    //region create
     fun add(module: Module) : Boolean{
-        if (module(module.code) == null) {
+       return if (module(module.code) == null) {
             val query =
                 "INSERT INTO Modules (code, name) VALUES ('${module.code}', '${module.name}')"
             db.execSQL(query)
-            return true
-        }
-        return false
+             true
+        } else {
+           false
+       }
     }
+
+    fun add(assignment: Assignment) {
+        val query = """INSERT INTO Assignments (Title, Weight, Deadline, ModuleCode)
+    VALUES ('${assignment.title}', '${assignment.weight}', ${assignment.deadline.time}, '${assignment.module.code}')"""
+        db.execSQL(query)
+    }
+
+    //endregion
+
+
+    //region retrieve
 
     fun allModules() : List<Module>{
 
@@ -56,11 +70,7 @@ init{
         }
     }
 
-    fun add(assignment: Assignment) {
-        val query = """INSERT INTO Assignments (Title, Weight, Deadline, ModuleCode)
-    VALUES ('${assignment.title}', '${assignment.weight}', ${assignment.deadline.time}, '${assignment.module.code}')"""
-        db.execSQL(query)
-    }
+
 
     private fun assignments(query: String, args: Array<String>?) : List<Assignment>{
         val assignments = mutableListOf<Assignment>()
@@ -87,6 +97,39 @@ init{
         return assignments(query, null)
     }
 
+    private fun assignmentsForModule(module: Module) : List<Assignment>{
+        val query = "SELECT * FROM Assignments WHERE ModuleCode = ?"
+        return assignments(query, arrayOf(module.code))
+    }
+
+    //endregion
+
+    //region update
+    fun update(module:Module){
+        val contentValues = ContentValues()
+        contentValues.put("Name", module.name)
+        val args = arrayOf(module.code)
+        db.update("Modules",contentValues,"Code = ?", args)
+    }
+
+
+    fun update(assignment: Assignment) {
+        val contentValues = ContentValues()
+        contentValues.put("Title", assignment.title)
+        contentValues.put("Weight", assignment.weight)
+        contentValues.put("Deadline", assignment.deadline.time)
+        contentValues.put("ModuleCode", assignment.module.code)
+        val args = arrayOf(assignment.id.toString())
+        db.update("Assignments",contentValues,"Id = ?",args)
+    }
+
+    //endregion
+
+
+
+    //region delete
+
+
     fun delete(assignment: Assignment){
         if (assignment.id != null) {
             val whereClause = "Id = ?"
@@ -95,10 +138,7 @@ init{
         }
     }
 
-    private fun assignmentsForModule(module: Module) : List<Assignment>{
-        val query = "SELECT * FROM Assignments WHERE ModuleCode = ?"
-        return assignments(query, arrayOf(module.code))
-    }
+
 
     fun delete(module: Module){
         //check for assignments and delete these first
@@ -106,15 +146,12 @@ init{
         for (assignment in moduleAssignments){
             delete(assignment)
         }
-        db.delete("Modules","Code = ?",arrayOf(module.code.toString()))
+        db.delete("Modules","Code = ?",arrayOf(module.code))
     }
 
-    fun update(module:Module){
-        val contentValues = ContentValues()
-        contentValues.put("Name", module.name)
-        val args = arrayOf(module.code)
-        db.update("Modules",contentValues,"Code = ?", args)
-    }
+
+    //endregion
+
 
 
 }
