@@ -1,7 +1,9 @@
 package com.tinyappco.deadlines
 
+import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
+import java.util.Date
 
 class DataManager (context: Context) {
 
@@ -53,5 +55,66 @@ init{
             null
         }
     }
+
+    fun add(assignment: Assignment) {
+        val query = """INSERT INTO Assignments (Title, Weight, Deadline, ModuleCode)
+    VALUES ('${assignment.title}', '${assignment.weight}', ${assignment.deadline.time}, '${assignment.module.code}')"""
+        db.execSQL(query)
+    }
+
+    private fun assignments(query: String, args: Array<String>?) : List<Assignment>{
+        val assignments = mutableListOf<Assignment>()
+
+        val cursor = db.rawQuery(query,args)
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getInt(cursor.getColumnIndexOrThrow("Id"))
+                val title = cursor.getString(cursor.getColumnIndexOrThrow("Title"))
+                val modCode =  cursor.getString(cursor.getColumnIndexOrThrow("ModuleCode"))
+                val weight = cursor.getInt(cursor.getColumnIndexOrThrow("Weight"))
+                val dateLong = cursor.getLong(cursor.getColumnIndexOrThrow("Deadline"))
+                val date = Date(dateLong)
+                val assignment = Assignment(id, title, weight, date, module(modCode)!!)
+                assignments.add(assignment)
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return assignments.sorted()
+    }
+
+    fun assignments() : List<Assignment>{
+        val query = "SELECT * FROM Assignments"
+        return assignments(query, null)
+    }
+
+    fun delete(assignment: Assignment){
+        if (assignment.id != null) {
+            val whereClause = "Id = ?"
+            val whereArgs = arrayOf(assignment.id.toString())
+            db.delete("Assignments", whereClause,whereArgs )
+        }
+    }
+
+    private fun assignmentsForModule(module: Module) : List<Assignment>{
+        val query = "SELECT * FROM Assignments WHERE ModuleCode = ?"
+        return assignments(query, arrayOf(module.code))
+    }
+
+    fun delete(module: Module){
+        //check for assignments and delete these first
+        val moduleAssignments = assignmentsForModule(module)
+        for (assignment in moduleAssignments){
+            delete(assignment)
+        }
+        db.delete("Modules","Code = ?",arrayOf(module.code.toString()))
+    }
+
+    fun update(module:Module){
+        val contentValues = ContentValues()
+        contentValues.put("Name", module.name)
+        val args = arrayOf(module.code)
+        db.update("Modules",contentValues,"Code = ?", args)
+    }
+
 
 }

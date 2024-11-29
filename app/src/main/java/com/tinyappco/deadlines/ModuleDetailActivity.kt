@@ -13,6 +13,8 @@ class ModuleDetailActivity : AppCompatActivity() {
 
     private lateinit var dataManager : DataManager
 
+    private var existingModule : Module? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -31,9 +33,29 @@ class ModuleDetailActivity : AppCompatActivity() {
         }
 
         binding.button.setOnClickListener { addModule() }
+
+        val module = intent.getSerializableExtra("module")
+        if (module is Module) {
+            existingModule = module
+            binding.etTitle.setText(module.name)
+            binding.etCode.setText(module.code)
+            binding.etCode.isEnabled = false //can't change code as primary key - delete module instead
+            binding.button.text = getString(R.string.update)
+        }
+
     }
 
     private fun addModule(){
+
+        val immutableExistingModule = existingModule
+        if (immutableExistingModule != null){
+            immutableExistingModule.name = binding.etTitle.text.toString()
+            dataManager.update(immutableExistingModule)
+            finish()
+        } else {
+            //existing code should go here
+
+
         val code = binding.etCode.text.toString()
         if (validateModuleCode(code)) {
             val module = Module(binding.etCode.text.toString(), binding.etTitle.text.toString())
@@ -46,6 +68,7 @@ class ModuleDetailActivity : AppCompatActivity() {
         }else {
             binding.tvError.text =
                 getString(R.string.module_code_should_be_two_upper_case_letters_followed_by_four_numbers)
+        }
         }
     }
 

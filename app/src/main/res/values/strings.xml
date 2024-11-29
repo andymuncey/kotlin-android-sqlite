@@ -12,4 +12,5 @@
     <string name="edit">Edit</string>
     <string name="module_code_should_be_two_upper_case_letters_followed_by_four_numbers">Module code should be two upper case letters followed by four numbers</string>
     <string name="unable_to_add_module_does_the_module_already_exist">Unable to add module, does the module already exist?</string>
+    <string name="update">Update</string>
 </resources>
