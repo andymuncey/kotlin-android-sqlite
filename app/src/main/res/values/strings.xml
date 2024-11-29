@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Deadlines</string>
+    <string name="add_assignment">Add Assignment</string>
+    <string name="add">Add</string>
+    <string name="module_name">Module Name</string>
+    <string name="module_code_e_g_co5225">Module Code e.g. CO5225</string>
+    <string name="weight">weight</string>
+    <string name="title">title</string>
+    <string name="new_module">New module</string>
+    <string name="edit_modules">Edit Modules</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+</resources>
