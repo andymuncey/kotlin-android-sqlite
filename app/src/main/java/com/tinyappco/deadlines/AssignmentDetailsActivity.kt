@@ -1,5 +1,6 @@
 package com.tinyappco.deadlines
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -29,7 +30,17 @@ class AssignmentDetailsActivity : AppCompatActivity() {
             addAssignment()
         }
 
+        binding.btnAddModule.setOnClickListener{
+            addModule()
+        }
 
+
+    }
+
+    private fun addModule(){
+
+        val intent = Intent(this,ModuleDetailActivity::class.java)
+        startActivity(intent)
     }
 
     private fun addAssignment() {
